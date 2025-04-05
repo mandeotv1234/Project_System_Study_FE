@@ -111,74 +111,81 @@ useEffect(() => {
 
   return (
     <div>
-      {/* Nút mở/đóng chatbox */}
-      <div
-        className="position-fixed bottom-0 end-0 m-3 btn btn-primary rounded-circle shadow"
-        style={{ zIndex: 1050 }}
-        onClick={() => setIsOpen(!isOpen)}
+    {/* Nút mở/đóng chatbox */}
+    <div
+      className="position-fixed bottom-0 end-0 m-3 btn btn-primary rounded-circle shadow"
+      style={{
+        zIndex: 1060, // Đảm bảo nút đóng luôn ở trên chatbox
+      }}
+      onClick={() => setIsOpen(!isOpen)}
+    >
+      {isOpen ? "Đóng" : "Chat"}
+    </div>
+  
+    {/* Chatbox */}
+    {isOpen && (
+      <motion.div
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 50 }}
+        className="position-fixed bottom-0 end-0 m-3 bg-white border rounded shadow"
+        style={{ width: "300px", zIndex: 1050 }}  // Chatbox có zIndex nhỏ hơn
       >
-        {isOpen ? "Đóng" : "Chat"}
-      </div>
-
-      {/* Chatbox */}
-      {isOpen && (
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 50 }}
-          className="position-fixed bottom-0 end-0 m-3 bg-white border rounded shadow"
-          style={{ width: "300px", zIndex: 1050 }}
-        >
-          <div className="bg-primary text-white p-3">
-            <h5 className="mb-0">Chat với Admin</h5>
-          </div>
-          <div className="p-3" style={{ height: "300px", overflowY: "auto" }}>
-            {messages.length > 0 ? (
-              messages.map((msg, index) => (
+        <div className="bg-primary text-white p-3">
+          <h5 className="mb-0">Chat với Admin</h5>
+          {/* Nút đóng chatbox */}
+          <button
+            className="btn btn-danger btn-sm float-end"
+            onClick={() => setIsOpen(false)}
+          >
+            X
+          </button>
+        </div>
+        <div className="p-3" style={{ height: "300px", overflowY: "auto" }}>
+          {messages.length > 0 ? (
+            messages.map((msg, index) => (
+              <div
+                key={index}
+                className={`mb-2 ${
+                  msg.senderId === userId ? "text-end" : "text-start"
+                }`}
+              >
                 <div
-                  key={index}
-                  className={`mb-2 ${
-                    msg.senderId === userId ? "text-end" : "text-start"
+                  className={`d-inline-block p-2 rounded ${
+                    msg.senderId === userId
+                      ? "bg-primary text-white"
+                      : "bg-light text-dark"
                   }`}
                 >
-                  <div
-                    className={`d-inline-block p-2 rounded ${
-                      msg.senderId === userId
-                        ? "bg-primary text-white"
-                        : "bg-light text-dark"
-                    }`}
-                  >
-                    {msg.content}
-                  </div>
-                  <div className="text-muted small mt-1">
-                    {new Date(msg.timestamp).toLocaleTimeString()}
-                  </div>
+                  {msg.content}
                 </div>
-              ))
-            ) : (
-              <p className="text-muted text-center">Không có tin nhắn nào.</p>
-            )}
+                <div className="text-muted small mt-1">
+                  {new Date(msg.timestamp).toLocaleTimeString()}
+                </div>
+              </div>
+            ))
+          ) : (
+            <p className="text-muted text-center">Không có tin nhắn nào.</p>
+          )}
+        </div>
+        <div className="p-3 border-top">
+          <div className="input-group">
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Nhập tin nhắn..."
+              value={messageContent}
+              onChange={(e) => setMessageContent(e.target.value)}
+            />
+            <button className="btn btn-primary" onClick={handleSendMessage}>
+              Gửi
+            </button>
           </div>
-          <div className="p-3 border-top">
-            <div className="input-group">
-              <input
-                type="text"
-                className="form-control"
-                placeholder="Nhập tin nhắn..."
-                value={messageContent}
-                onChange={(e) => setMessageContent(e.target.value)}
-              />
-              <button
-                className="btn btn-primary"
-                onClick={handleSendMessage}
-              >
-                Gửi
-              </button>
-            </div>
-          </div>
-        </motion.div>
-      )}
-    </div>
+        </div>
+      </motion.div>
+    )}
+  </div>
+  
   );
 };
 
